@@ -1,0 +1,22 @@
+[project]
+name = "codebase"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Rav", email = "ravseime@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "highspy>=1.15.1",
+    "numpy>=2.5.3",
+    "pandas>=3.0.6",
+    "pyomo>=6.10.1",
+]
+
+[project.scripts]
+codebase = "codebase:main"
+
+[build-system]
+requires = ["uv_build>=0.12.20,<0.13.0"]
+build-backend = "uv_build"
