@@ -1,4 +1,5 @@
 import pandas as pd
+import json
 
 """This is a python file for cleaning the data
 It was built to be somewhat readable for non python users
@@ -55,6 +56,18 @@ print("####### Testing for APAM ##########")
 APAM_list = df_vals['APAM'].tolist()    #List of returns for APAM
 avg_geo_return(APAM_list, test = True)  
 
+#### We run a for loop to calculate avg geo return for all tickers
+#Which we store in a list afterwards
+exp_ret_list = list()
+
+for ticker in df_vals.columns:
+    ticker_values = df_vals[ticker].dropna().to_list() 
+    #For a given ticker, we drop NA values. See the report for a discussion of the 
+    #implications of this
+    exp_ret_list.append(avg_geo_return(ticker_values))
+#Note that computing it like this gives us the avg geo return over the entire time horizon
+
+
 
 #### Computing covariance matrix
 
@@ -85,4 +98,17 @@ The documenation explains this function: https://pandas.pydata.org/docs/referenc
 """
 
 print(cov_matrix)
+
+test_dict = {"key1" : "value1", "key2" : "value2"}
+
+#### Writing the cleaned data into a json file
+
+data_cleaned = {
+    "ticker_list" : df_vals.columns.to_list(),
+    "exp_ret_list" : exp_ret_list,
+    "cov_nested_list" : cov_matrix.values.tolist()
+}
+
+with open("data_cleaned.json", "w") as f:
+    json.dump(data_cleaned,f)
 

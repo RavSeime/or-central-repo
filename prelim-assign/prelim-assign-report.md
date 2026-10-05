@@ -55,6 +55,11 @@ For graphs we used some python scripts after the raw output of the model step.
 #### datacleaning.py
 
 Just writ it down in Latex here, what be popping etc
+
+Remember that SYENS Is missing 115 values compared to the others (can do a little finance nerding here, maybe hand of to Briuc)
+
+Output: Just use dictionaries and string conc, a simple structure you know how to use.
+
 #### solver.py
 
 
