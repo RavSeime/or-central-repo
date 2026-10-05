@@ -6,7 +6,7 @@ import numpy as np
 def main_optimization_model(mu, cov, tickers, target_return, allow_short=False):
     n = len(mu)
     assets = range(n)
-    tolerance = 0.0001 #This is important!
+    tolerance = 0.0010 #This is important!
 
     model = pyo.ConcreteModel()
     model.w = pyo.Var(assets, domain=pyo.Reals if allow_short else pyo.NonNegativeReals)
