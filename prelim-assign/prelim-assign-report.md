@@ -54,18 +54,86 @@ For graphs we used some python scripts after the raw output of the model step.
 
 #### datacleaning.py
 
-Just writ it down in Latex here, what be popping etc
+We first convert the raw csv data into a a tidy data format (one col per ticker, one row per date). At this stage we see that we are missing 125 entries for the the ticker SYENS. Since the raw data is a csv, it is not readily apparent if this data is missing from the first dates or the last ones. For the rest of the analysis we assume that the the data is missing from the last 125 weeks. We could have replaced the missing data with from Yahoo finance, but we choose to not do so for the sake of simplicity.
 
-Remember that SYENS Is missing 115 values compared to the others (can do a little finance nerding here, maybe hand of to Briuc)
+#### computing average geometric returns
 
-Output: Just use dictionaries and string conc, a simple structure you know how to use.
+For each ticker, we compute the average geometric growth rate across all the 260 weeks with the following formula:
+
+$$
+g = \left(\frac{P_n}{P_0}\right)^{1/n}
+$$
+
+We interestingly note that that a lot of the stocks have had a net decrease in price during the 5 year time window, and thus give us a geometric growth multiplicator of bellow 1. One could argue that these stocks should not have a negative expected return, but this is a weakness of our frequnetist methology.
+
+For SYENS we compute for the time window we have data available, which is only for the first 145 weeks.
+#### computing covariance matrix
+
+We first transform our tidy dataset from raw values to pct change, because this is a more interesting metric. We then calculate the covariance matrix using a pandas function, saving us from writing the logic by hand. This calculation excludes the NA values of SYENS.
+
+At the end of the file we  save our cleaned data to a JSON file.
 
 #### solver.py
 
+##### No short selling allowed model formulation
+In the main_optimization_model we implement both the short selling and non short selling optimization model. The non short selling model can be formulated as:
 
-Write the model, you know this, skim the finance book.
+$$
+\begin{align}
+\min_{w} \quad & \sum_{i=1}^{n} \sum_{j=1}^{n} w_i w_j \text{Cov}(r_i, r_j) \\
+\text{s.t.} \quad & \sum_{i=1}^{n} w_i = 1 \\
+& \mu^T w \geq \bar{\mu} - \epsilon \\
+& \mu^T w \leq \bar{\mu} + \epsilon \\
+& w_i \geq 0 \quad \forall i = 1, \ldots, n
+\end{align}
+$$
 
+where:
+- $w_i$ = weight allocated to asset $i$ (between 0 and 1 for no-short case)
+- $\Sigma_{ij}$ = covariance between asset $i$ and asset $j$ 
+- $\mu_i$ = expected weekly growth rate for asset $i$ 
+- $\bar{\mu}$ = target portfolio return we want to achieve
+- $\epsilon = 0.0001$ = tolerance (we allow the portfolio return to be within ±0.0001 of the target)
+- $n$ = 20 (number of stocks in the BEL20 index)
 
+The model minimizes portfolio variance (risk) subject to achieving approximately the target return, with all weights constrained to be non-negative (no short selling allowed). The tolerance band allows the solver flexibility to find feasible solutions when the exact target return is unachievable. The unit of measure for the return rate is weekly geometric growth factor (ie 1.001 for a weekly increase of 0.1%)
+
+##### No selling allowed model formulation
+
+In the no short selling version the only change we make is that negative values are allowed, ie. 
+
+$$
+w_i \in \mathbb{R} \quad \forall i = 1, \ldots, n
+$$
+
+#### Methology for running the models
+
+For the no short selling model the logical upper and lower boundary for Expected return are given by the min and max value of `exp_return_list` (this is the list of expected `mu` calculated in the datacleaning.py file). For the short selling allowed model we set the lower value equal to the min of `exp_return_list`, and a maximum set to the max of `exp_return_list` + 0.01. These chosen values are of course somewhat arbitrary, but where set explicitly to allow for running the analysis automatically.
+
+The output is saved to JSON files.
 
 ## Findings
 
+![[efficient_frontier.png]]
+
+Above are the results of the solver. The efficient frontier for no short selling is quite small, with only 2-3 data points, this is because there stock with the highest expected return "only" has a return of 1.034. While for the short selling allowed the frontier is similar (although slightly better) for expected returns of 1-1.034, but the possibility of shorting stocks allows for shorting low/negative expected returns stocks in order to buying expected return stocks. This comes at the cost of higher variance.
+
+For both the short and no short cases, we see that the points on the graph bellow an expected return of 1.001 (approximate) are not efficient.
+
+
+## Bonus: 3 Stock portfolio
+
+Will get back to tmr, gotta change solver. 
+
+## Appendix
+
+The core files for running the analysis can be found in the following locaitons:
+
+or-central-repo/
+├── prelim-assign/
+│   ├── bel20_2026.csv
+│   └── codebase/src/codebase/
+│       ├── datacleaning.py
+│       ├── solver.py
+│       ├── data_cleaned.json
+│       └── solver.output.json

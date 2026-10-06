@@ -14,7 +14,7 @@ It was not built to be "Optimal", (running the analysis in Python vs Excel
 input = pd.read_csv("../../../bel20_2026.csv") 
 
 
-#### Converting the raw data into a more usable format
+#### 1 Converting the raw data into a more usable format
 df_vals = input.set_index('Ticker')
 
 df_vals = df_vals.transpose()
@@ -94,7 +94,7 @@ cov_matrix = df_delta.cov()
 #the computation. Which is the behaviour we want. So entries where SYENS = NA is not considered
 Since the computations are pairwise the NA values for SYENS do not affecf cov pairs that SYENS is not a part of
 
-The documenation explains this function: https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.cov.ht
+The documenation explains this function: https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.cov.html#pandas.DataFrame.cov
 """
 
 print(cov_matrix)

@@ -36,6 +36,37 @@ def main_optimization_model(mu, cov, tickers, target_return, allow_short=False):
     return weights, result, objective_value
 
 
+def max_3_optimization_model(mu, cov, tickers, target_return, allow_short=False):
+    n = len(mu)
+    assets = range(n)
+    tolerance = 0.0010 #This is important!
+
+    model = pyo.ConcreteModel()
+    model.w = pyo.Var(assets, domain=pyo.Reals if allow_short else pyo.NonNegativeReals)
+
+    model.budget = pyo.Constraint(expr=sum(model.w[i] for i in assets) == 1)
+
+
+    # Allow target return +/- tolerance
+    model.target = pyo.Constraint(
+        expr=sum(model.w[i] * mu[i] for i in assets) >= target_return - tolerance
+    )
+    model.target_max = pyo.Constraint(
+        expr=sum(model.w[i] * mu[i] for i in assets) <= target_return + tolerance
+    )
+
+
+    model.obj = pyo.Objective(
+        expr=sum(model.w[i] * cov[i][j] * model.w[j] for i in assets for j in assets), 
+        sense=pyo.minimize,
+    )
+
+    solver = pyo.SolverFactory("highs")
+    result = solver.solve(model)
+    objective_value = pyo.value(model.obj)
+
+    weights = {tickers[i]: pyo.value(model.w[i]) for i in assets}
+    return weights, result, objective_value
 
 
 with open("data_cleaned.json") as f:
@@ -111,3 +142,6 @@ with open("solver.output.json", "w") as f:
     json.dump(frontier_output, f, indent=2)
 
 print("Results written to solver.output.json")
+
+
+
