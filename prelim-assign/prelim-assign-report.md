@@ -13,18 +13,18 @@ For our IT architecture we had a number of desirable characteristics.
 
 Any IT Architecture is a compromise between different goals. The programmatic approach ruled out excel. When choosing between AMPL and Python, we decided to use Python because it is both open source and would be more beneficial for us in a work context. It is often easier to get access to a Python runtime than an AMPL runtime. The drawback of our approach is that using python packages increases the complexity (environment management is needed), by ruling out commercial solvers we might also be sacrificing some "computational performance", but the effect of this will be negligible for the scope our project.
 
-We used the python package [Pyomo](https://www.pyomo.org/) as the modelling language. The benefit of this package is molecularity: Throughout the entire project we can use one modelling language interface, while swapping out the solver used on a problem to problem basis. For this preliminary report the solved [HIGHS ](https://highs.dev/)was used 
+We used the python package [Pyomo](https://www.pyomo.org/) as the modelling language. The benefit of this package is modularity: Throughout the entire project we can use one modelling language interface, while swapping out the solver used on a problem to problem basis. For this preliminary report the solved [HIGHS ](https://highs.dev/)was used 
 #### Design flowchart
 
 ```mermaid
 
 flowchart TD
 
-model_doc[model written in latex<br><i>Contains entire model written in a mathematical synstaxt, with detailed documenation!]
+model_doc[model written in latex<br><i>Contains entire model written in a mathematical synstaxt]
 
-model_imp[solver.py<br><i>main python model script, Witten in Pyomo, solved with HiGHS <i>]:::python
+model_imp[solver.py<br><i>main python model script, Witten in Pyomo, solved with HIGHS <i>]:::python
 
-input([all the raw input data as given by professor])
+input([all the raw input data])
 
 cleaner_script[datacleaning.py]:::python
 
@@ -98,9 +98,9 @@ where:
 
 The model minimizes portfolio variance (risk) subject to achieving approximately the target return, with all weights constrained to be non-negative (no short selling allowed). The tolerance band allows the solver flexibility to find feasible solutions when the exact target return is unachievable. The unit of measure for the return rate is weekly geometric growth factor (ie 1.001 for a weekly increase of 0.1%)
 
-##### No selling allowed model formulation
+##### Short selling allowed model formulation
 
-In the no short selling version the only change we make is that negative values are allowed, ie. 
+In the short selling allowed version the only change we make is that negative values are allowed, ie. 
 
 $$
 w_i \in \mathbb{R} \quad \forall i = 1, \ldots, n
@@ -108,7 +108,9 @@ $$
 
 #### Methology for running the models
 
-For the no short selling model the logical upper and lower boundary for Expected return are given by the min and max value of `exp_return_list` (this is the list of expected `mu` calculated in the datacleaning.py file). For the short selling allowed model we set the lower value equal to the min of `exp_return_list`, and a maximum set to the max of `exp_return_list` + 0.01. These chosen values are of course somewhat arbitrary, but where set explicitly to allow for running the analysis automatically.
+For the no short selling model the logical upper and lower boundary for Expected return are given by the min and max value of `exp_return_list` (this is the list of expected `mu` calculated in the datacleaning.py file). For the short selling allowed model we set the lower value equal to the min of `exp_return_list`, and a maximum set to the max of `exp_return_list` + 0.01. These chosen values are of course somewhat arbitrary, but where set explicitly to allow for running the analysis automatically. When the max and min value are set the the list is populated with increments of 0.001
+
+Once we had the exp_return_list for both short and no short we run a for loop to iterative over all the desired exp returns, running the solver and minimizing the variance for each entry
 
 The output is saved to JSON files.
 
@@ -120,14 +122,13 @@ Above are the results of the solver. The efficient frontier for no short selling
 
 For both the short and no short cases, we see that the points on the graph bellow an expected return of 1.001 (approximate) are not efficient.
 
-
 ## Bonus: 3 Stock portfolio
 
 Will get back to tmr, gotta change solver. 
 
 ## Appendix
 
-The core files for running the analysis can be found in the following locaitons:
+The core files for running the analysis can be found in the following locations:
 
 or-central-repo/
 ├── prelim-assign/
