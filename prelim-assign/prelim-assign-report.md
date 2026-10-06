@@ -1,5 +1,5 @@
 
-*AI Transparency: We used Claude Code, because LLM based tools can be a powerful companion in code based knowledge work. We where carefull to not use it as a substitute for our own thinking. 
+*AI Transparency: We used Claude Code, because LLM based tools can be a powerful companion in code based knowledge work. We were carefull to not use it as a substitute for our own thinking. The report is self contained at 5 pages. See the appendix for calculation of the tangent portolfio and the bonus task.
 
 ## Methology
 
@@ -54,9 +54,11 @@ For graphs we used some python scripts after the raw output of the model step.
 
 #### datacleaning.py
 
-We first convert the raw csv data into a a tidy data format (one col per ticker, one row per date). At this stage we see that we are missing 125 entries for the the ticker SYENS. Since the raw data is a csv, it is not readily apparent if this data is missing from the first dates or the last ones. For the rest of the analysis we assume that the the data is missing from the last 125 weeks. We could have replaced the missing data with from Yahoo finance, but we choose to not do so for the sake of simplicity.
+We first convert the raw csv data into a a tidy data format (one col per ticker, one row per date). At this stage we see that we are missing 125 entries for the the ticker SYENS. SThis is because SYENS joined the BEL20 on December 20 2023. We right allign the SYENS data to account for this (if we did not do this it would seem like missing data is from 2025,2026, this is due to how a csv is formatted)
 
 #### computing average geometric returns
+
+We choose to use the geometric growth rate instead of the arithmetic one, because it generally gives more meaningful figures when working with stocks. 
 
 For each ticker, we compute the average geometric growth rate across all the 260 weeks with the following formula:
 
@@ -64,15 +66,12 @@ $$
 g = \left(\frac{P_n}{P_0}\right)^{1/n}
 $$
 
-We interestingly note that that a lot of the stocks have had a net decrease in price during the 5 year time window, and thus give us a geometric growth multiplicator of bellow 1. One could argue that these stocks should not have a negative expected return, but this is a weakness of our frequnetist methology.
-
-For SYENS we compute for the time window we have data available, which is only for the first 145 weeks.
+We interestingly note that that a lot of the stocks have had a net decrease in price during the 5 year time window, and thus give us a geometric growth multiplicator of bellow 1. One could argue that these stocks should not have a negative expected return, but this is a weakness of our frequnetist methology. For SYENS we only compute based on the available data.
 #### computing covariance matrix
 
 We first transform our tidy dataset from raw values to pct change, because this is a more interesting metric. We then calculate the covariance matrix using a pandas function, saving us from writing the logic by hand. This calculation excludes the NA values of SYENS.
 
 At the end of the file we  save our cleaned data to a JSON file.
-
 #### solver.py
 
 ##### No short selling allowed model formulation
@@ -122,12 +121,8 @@ Above are the results of the solver. The efficient frontier for no short selling
 
 For both the short and no short cases, we see that the points on the graph bellow an expected return of 1.001 (approximate) are not efficient.
 
-## Bonus: 3 Stock portfolio
-
-Will get back to tmr, gotta change solver. 
-
 ## Appendix
-
+### File locations
 The core files for running the analysis can be found in the following locations:
 
 or-central-repo/
@@ -138,3 +133,18 @@ or-central-repo/
 │       ├── solver.py
 │       ├── data_cleaned.json
 │       └── solver.output.json
+### Bonus, max 3 stocks
+
+We use the big M method. Adding the following constrains to the no short selling model
+
+$$
+\begin{align}
+x_i \in \{0, 1\} \quad & \forall i \\
+\sum_{i=1}^{n} x_i \leq 3 \\
+w_i \leq M \cdot x_i \quad & \forall i
+\end{align}
+$$
+Since no short selling is allowed, it is sufficient to set M = 1
+
+This makes the problem into a MiP problem. 
+

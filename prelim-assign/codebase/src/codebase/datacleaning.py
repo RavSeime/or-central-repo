@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import json
 
 """This is a python file for cleaning the data
@@ -20,6 +21,12 @@ df_vals = input.set_index('Ticker')
 df_vals = df_vals.transpose()
 
 df_vals.index = pd.to_datetime(df_vals.index)
+
+#### Right-align SYENS data (shift missing values to start)
+syens_valid = df_vals['SYENS'].dropna()
+num_padding = len(df_vals) - len(syens_valid)
+df_vals['SYENS'] = pd.concat([pd.Series([np.nan] * num_padding, index=range(num_padding)),
+                               syens_valid.reset_index(drop=True)], ignore_index=True).values
 
 print("############# New data format: #######")
 print(df_vals.info())
