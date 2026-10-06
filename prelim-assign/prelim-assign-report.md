@@ -107,19 +107,21 @@ $$
 
 #### Methology for running the models
 
-For the no short selling model the logical upper and lower boundary for Expected return are given by the min and max value of `exp_return_list` (this is the list of expected `mu` calculated in the datacleaning.py file). For the short selling allowed model we set the lower value equal to the min of `exp_return_list`, and a maximum set to the max of `exp_return_list` + 0.01. These chosen values are of course somewhat arbitrary, but where set explicitly to allow for running the analysis automatically. When the max and min value are set the list is populated with increments of 0.001
+For the both short selling allowed and the no short selling models, we define a lists of expected returns to to use as contraints. For both lists, we set the minimum value is set to the lowest expected return in the cleaned input. For the no short selling list the maximum value is equall to the maximum expected returns in the cleaned input. For the short selling allowed list the maximum values is equall to this value +0.01. For both lists, we populated the space between the min and max value in increments of 0.001.
 
-Once we had the exp_return_list for both short and no short we run a for loop to iterate over all the desired exp returns, running the solver and minimizing the variance for each entry
+Once we had the exp_return_list for both short selling allowed and no short selling we run a for loop to iterate over all the desired exp returns, running the solver and minimizing the variance for each entry
 
 The output is saved to JSON files.
 
 ## Findings
 
-![[efficient_frontier.png]]
+![[efficient_frontier.png|532]]
 
 Above are the results of the solver. The efficient frontier for no short selling is quite small, with only 2-3 data points, this is because there stock with the highest expected return "only" has a return of 1.034. While for the short selling allowed the frontier is similar (although slightly better) for expected returns of 1-1.034, but the possibility of shorting stocks allows for shorting low/negative expected returns stocks in order to buying expected return stocks. This comes at the cost of higher variance.
 
 For both the short and no short cases, we see that the points on the graph bellow an expected return of 1.001 (approximate) are not efficient.
+
+Our  core analysis assumes no risk free return is available. See the appendix for a quick exploration of the tangent portfolio is risk free return is available. 
 
 ## Appendix
 ### File locations
