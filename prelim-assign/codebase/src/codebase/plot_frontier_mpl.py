@@ -28,7 +28,7 @@ ax.plot(variance_short, returns_short, 's-', linewidth=2.5, markersize=5,
 
 # Labels and title
 ax.set_xlabel('Variance', fontsize=14, fontweight='bold')
-ax.set_ylabel('Expected Return', fontsize=14, fontweight='bold')
+ax.set_ylabel('Expected Return (monthly)', fontsize=14, fontweight='bold')
 ax.set_title('Optimization Results',
              fontsize=16, fontweight='bold', pad=20)
 
@@ -153,7 +153,7 @@ else:
 
     # Labels and title
     ax.set_xlabel('Variance', fontsize=14, fontweight='bold')
-    ax.set_ylabel('Expected Return', fontsize=14, fontweight='bold')
+    ax.set_ylabel('Expected Return (monthly)', fontsize=14, fontweight='bold')
     ax.set_title('Tangent Portfolio',
                  fontsize=16, fontweight='bold', pad=20)
 

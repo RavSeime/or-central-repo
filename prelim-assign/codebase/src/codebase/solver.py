@@ -6,7 +6,7 @@ import numpy as np
 def main_optimization_model(mu, cov, tickers, target_return, allow_short=False):
     n = len(mu)
     assets = range(n)
-    tolerance = 0.0010 #This is important!
+    tolerance = 0.0002 #This is important!
 
     model = pyo.ConcreteModel()
     model.w = pyo.Var(assets, domain=pyo.Reals if allow_short else pyo.NonNegativeReals)
@@ -115,7 +115,7 @@ print("Results written to solver.output.json")
 
 #### Bonus: Max 3 vars
 
-def max_3_optimization_model(mu, cov, tickers, target_return, allow_short=False):
+def max_3_optimization_model(mu, cov, tickers, target_return, allow_short=False, max_stocks=None):
     n = len(mu)
     assets = range(n)
     tolerance = 0.0010 #This is important!
@@ -134,15 +134,61 @@ def max_3_optimization_model(mu, cov, tickers, target_return, allow_short=False)
         expr=sum(model.w[i] * mu[i] for i in assets) <= target_return + tolerance
     )
 
+    # Big-M constraints for cardinality (max number of stocks)
+    if max_stocks is not None:
+        model.x = pyo.Var(assets, domain=pyo.Binary)
+        model.cardinality = pyo.Constraint(expr=sum(model.x[i] for i in assets) <= max_stocks)
+        model.big_m = pyo.ConstraintList()
+        for i in assets:
+            model.big_m.add(model.w[i] <= model.x[i])
+        solver = pyo.SolverFactory("scip")
+    else:
+        solver = pyo.SolverFactory("highs")
 
     model.obj = pyo.Objective(
-        expr=sum(model.w[i] * cov[i][j] * model.w[j] for i in assets for j in assets), 
+        expr=sum(model.w[i] * cov[i][j] * model.w[j] for i in assets for j in assets),
         sense=pyo.minimize,
     )
 
-    solver = pyo.SolverFactory("highs")
     result = solver.solve(model)
     objective_value = pyo.value(model.obj)
 
     weights = {tickers[i]: pyo.value(model.w[i]) for i in assets}
     return weights, result, objective_value
+
+
+#### Bonus: Max 3 stocks with big-M method (no short selling)
+
+print("\n" + "="*70)
+print("BONUS ANALYSIS: MAX 3 STOCKS PORTFOLIO (NO SHORT SELLING)")
+print("="*70)
+
+target_return_max3 = 1.002
+allow_short_max3 = False
+
+try:
+    weights_max3, result_max3, variance_max3 = max_3_optimization_model(
+        mu, cov, tickers, target_return=target_return_max3, allow_short=allow_short_max3, max_stocks=3
+    )
+
+    # Print detailed results
+    print(f"\nTarget Return: {target_return_max3}")
+    print(f"Portfolio Variance: {variance_max3:.8f}")
+    print(f"Actual Portfolio Return: {sum(weights_max3[tickers[i]] * mu[i] for i in range(len(mu))):.8f}")
+    print(f"Solver Status: {result_max3.solver.status}")
+    print(f"Termination Condition: {result_max3.solver.termination_condition}")
+
+    print("\nStocks in Portfolio (with non-zero weights):")
+    selected_stocks = [(ticker, weight) for ticker, weight in weights_max3.items() if abs(weight) > 1e-6]
+    selected_stocks.sort(key=lambda x: abs(x[1]), reverse=True)
+
+    num_stocks = len(selected_stocks)
+    print(f"Number of stocks selected: {num_stocks}")
+
+    for ticker, weight in selected_stocks:
+        print(f"  {ticker}: {weight:.6f}")
+
+    print("\n" + "="*70)
+
+except Exception as e:
+    raise ValueError(f"Max-3 stocks analysis failed. SCIP solver may not be available. Error: {e}")

@@ -148,6 +148,9 @@ w_i \leq M \cdot x_i \quad & \forall i
 $$
 Since no short selling is allowed, it is sufficient to set M = 1
 
-This makes the problem into a MiP problem. 
+This makes the problem into a MiP problem. WORKING ON IT
 
 ### Bonus, tangent porfolio
+![[tangent_portfolio.png]]
+
+You write here Breuc
