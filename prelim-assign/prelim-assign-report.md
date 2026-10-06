@@ -1,5 +1,5 @@
 
-*AI Transparency: We used Claude Code, because LLM based tools can be a powerful companion in code based knowledge work. We were carefull to not use it as a substitute for our own thinking. The report is self contained at 5 pages. See the appendix for calculation of the tangent portolfio and the bonus task.
+*AI Transparency: We used Claude Code, because LLM based tools can be a powerful companion in code based knowledge work. We were careful to not use it as a substitute for our own thinking. The report is self contained at 5 pages. See the appendix for calculation of the tangent portolfio and the bonus task.
 
 ## Methology
 
@@ -20,9 +20,9 @@ We used the python package [Pyomo](https://www.pyomo.org/) as the modelling lang
 
 flowchart TD
 
-model_doc[model written in latex<br><i>Contains entire model written in a mathematical synstaxt]
+model_doc[model written in latex<br><i>Contains entire model written in a mathematical syntax]
 
-model_imp[solver.py<br><i>main python model script, Witten in Pyomo, solved with HIGHS <i>]:::python
+model_imp[solver.py<br><i>main python model script, Written in Pyomo, solved with HIGHS <i>]:::python
 
 input([all the raw input data])
 
@@ -54,7 +54,7 @@ For graphs we used some python scripts after the raw output of the model step.
 
 #### datacleaning.py
 
-We first convert the raw csv data into a a tidy data format (one col per ticker, one row per date). At this stage we see that we are missing 125 entries for the the ticker SYENS. SThis is because SYENS joined the BEL20 on December 20 2023. We right allign the SYENS data to account for this (if we did not do this it would seem like missing data is from 2025,2026, this is due to how a csv is formatted)
+We first convert the raw csv data into a tidy data format (one col per ticker, one row per date). At this stage we see that we are missing 125 entries for the ticker SYENS. This is because SYENS joined the BEL20 on December 20 2023. We right align the SYENS data to account for this (if we did not do this it would seem like missing data is from 2025,2026, this is due to how a csv is formatted)
 
 #### computing average geometric returns
 
@@ -66,7 +66,7 @@ $$
 g = \left(\frac{P_n}{P_0}\right)^{1/n}
 $$
 
-We interestingly note that that a lot of the stocks have had a net decrease in price during the 5 year time window, and thus give us a geometric growth multiplicator of bellow 1. One could argue that these stocks should not have a negative expected return, but this is a weakness of our frequnetist methology. For SYENS we only compute based on the available data.
+We interestingly note that a lot of the stocks have had a net decrease in price during the 5 year time window, and thus give us a geometric growth multiplicator of below 1. One could argue that these stocks should not have a negative expected return, but this is a weakness of our frequnetist methology. For SYENS we only compute based on the available data.
 #### computing covariance matrix
 
 We first transform our tidy dataset from raw values to pct change, because this is a more interesting metric. We then calculate the covariance matrix using a pandas function, saving us from writing the logic by hand. This calculation excludes the NA values of SYENS.
@@ -107,9 +107,9 @@ $$
 
 #### Methology for running the models
 
-For the no short selling model the logical upper and lower boundary for Expected return are given by the min and max value of `exp_return_list` (this is the list of expected `mu` calculated in the datacleaning.py file). For the short selling allowed model we set the lower value equal to the min of `exp_return_list`, and a maximum set to the max of `exp_return_list` + 0.01. These chosen values are of course somewhat arbitrary, but where set explicitly to allow for running the analysis automatically. When the max and min value are set the the list is populated with increments of 0.001
+For the no short selling model the logical upper and lower boundary for Expected return are given by the min and max value of `exp_return_list` (this is the list of expected `mu` calculated in the datacleaning.py file). For the short selling allowed model we set the lower value equal to the min of `exp_return_list`, and a maximum set to the max of `exp_return_list` + 0.01. These chosen values are of course somewhat arbitrary, but where set explicitly to allow for running the analysis automatically. When the max and min value are set the list is populated with increments of 0.001
 
-Once we had the exp_return_list for both short and no short we run a for loop to iterative over all the desired exp returns, running the solver and minimizing the variance for each entry
+Once we had the exp_return_list for both short and no short we run a for loop to iterate over all the desired exp returns, running the solver and minimizing the variance for each entry
 
 The output is saved to JSON files.
 
@@ -148,3 +148,4 @@ Since no short selling is allowed, it is sufficient to set M = 1
 
 This makes the problem into a MiP problem. 
 
+### Bonus, tangent porfolio
