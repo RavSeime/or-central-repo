@@ -54,7 +54,7 @@ For graphs we used some python scripts after the raw output of the model step.
 
 #### datacleaning.py
 
-We first convert the raw csv data into a tidy data format (one col per ticker, one row per date). At this stage we see that we are missing 125 entries for the ticker SYENS. This is because SYENS joined the BEL20 on December 20 2023. We right align the SYENS data to account for this (if we did not do this it would seem like missing data is from 2025,2026, this is due to how a csv is formatted)
+We first convert the raw csv data into a tidy data format (one col per ticker, one row per date). At this stage we see that we are missing 125 entries for the ticker SYENS. We assume that this data is missing from the end of the time horizon, although this is a point of uncertainty due to how a csv is fomratted.
 
 #### computing average geometric returns
 
@@ -148,9 +148,7 @@ w_i \leq M \cdot x_i \quad & \forall i
 $$
 Since no short selling is allowed, it is sufficient to set M = 1
 
-This makes the problem into a MiP problem. WORKING ON IT
+However this makes the problem into a MiPQ problem, which HIGHS struggles to solve. For future tasks we will explore other solvers to give us the flexiblity needed to solve this.
 
-### Bonus, tangent porfolio
-![[tangent_portfolio.png]]
 
-You write here Breuc
+

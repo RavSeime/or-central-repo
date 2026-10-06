@@ -22,11 +22,7 @@ df_vals = df_vals.transpose()
 
 df_vals.index = pd.to_datetime(df_vals.index)
 
-#### Right-align SYENS data (shift missing values to start)
-syens_valid = df_vals['SYENS'].dropna()
-num_padding = len(df_vals) - len(syens_valid)
-df_vals['SYENS'] = pd.concat([pd.Series([np.nan] * num_padding, index=range(num_padding)),
-                               syens_valid.reset_index(drop=True)], ignore_index=True).values
+
 
 print("############# New data format: #######")
 print(df_vals.info())
