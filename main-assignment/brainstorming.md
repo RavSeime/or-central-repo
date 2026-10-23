@@ -2,9 +2,12 @@
 
 *Overall philosophy* We want something that is both technically impressive (Rav can fix this) and financially sound (Brieuc). Why? We want a good grade (at LEAST 16/20) and to learn alot :)
 
+### rav and br first chat
 #### Do we use the Markowitz-Mean variance optimization framework?
 
-I say yes, if we want something that is better it will quickly become way to complex (Bayesian statistics), our complexity is already high
+No we use cvar as risk. 
+~~I say yes, if we want something that is better it will quickly become way to complex (Bayesian statistics), our complexity is already high
+
 
 #### What point on efficient frontier to pick
 
@@ -21,7 +24,8 @@ $$
 
 ##### tangent porfolio
 
-We assume a risk free rate and pick the tangent porfolio. This is the most correct method from financial theory, and it should be prefered. We can include the other method in the appendix to flex
+This will be an extra
+~~We assume a risk free rate and pick the tangent porfolio. This is the most correct method from financial theory, and it should be prefered. We can include the other method in the appendix to flex
 
 #### What other constraints to have
 
@@ -53,6 +57,7 @@ For each week:
 	
 ```
 
+
 Note: What is the most technically impressive is not always the most financially sound. Making a complex rebalancing function (which will be a little wrong either way) is cool, but often just holding a long position and not incurring rebalancing costs is better: Proposed idea: We make a complex function (Rav and Brieuc agree on something) and then we add a human in the loop element (we approve or reject the proposed costly re balancing): We do not fully trust the assumptions of our model to make costly and reactive adjustment autonomously
 
 
@@ -67,3 +72,11 @@ We want to push to formulations to be as easy to solve as possible. The QP can b
 
 #### Notes from chat
 -Convert it all to EU
+
+
+
+### rav working on it himself notes
+
+
+We use the same cleaning script (more or less), then we add a scenario generation script using https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.multivariate_normal.html
+
