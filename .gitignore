@@ -1,0 +1,14 @@
+.*
+!.gitignore
+*.csv
+scrap/
+**/prelim-assign/scrappad.md
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+*.egg-info/
+.Python

@@ -127,7 +127,6 @@ Our  core analysis assumes no risk free return is available. See the appendix fo
 ### File locations
 The core files for running the analysis can be found in the following locations:
 
-or-central-repo/
 ├── prelim-assign/
 │   ├── bel20_2026.csv
 │   └── codebase/src/codebase/
@@ -151,4 +150,8 @@ Since no short selling is allowed, it is sufficient to set M = 1
 However this makes the problem into a MiPQ problem, which HIGHS struggles to solve. For future tasks we will explore other solvers to give us the flexiblity needed to solve this.
 
 
+### Tangent portolio
+If we assume a risk free rate of 2.4% per anum (roughly )
 
+
+![[tangent_portfolio.png]]
