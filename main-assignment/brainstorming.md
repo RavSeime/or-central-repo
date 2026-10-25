@@ -80,3 +80,17 @@ We want to push to formulations to be as easy to solve as possible. The QP can b
 
 We use the same cleaning script (more or less), then we add a scenario generation script using https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.multivariate_normal.html
 
+
+$$
+\begin{aligned}
+\min_{x,\,z,\,\gamma} \quad & \gamma + \frac{1}{(1-\alpha)S} \sum_{s=1}^{S} z_s \\
+\text{s.t.} \quad & z_s \ge 0, && s = 1, \dots, S, \\
+& z_s \ge f(x, y_s) - \gamma, && s = 1, \dots, S, \\
+& x \in X.
+\end{aligned}
+\tag{17.10}
+$$
+
+#### to do
+hand trace generate scenarios function  
+run a sanity check on the scenario cumalitvereturnds
