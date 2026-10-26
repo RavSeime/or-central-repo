@@ -94,3 +94,4 @@ $$
 #### to do
 hand trace generate scenarios function  
 run a sanity check on the scenario cumalitvereturnds
+check that choosen portfolio has lower variance than one invested in entire market
