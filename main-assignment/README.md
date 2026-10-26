@@ -23,7 +23,7 @@ plot[plot_frontier.ipynb]:::python
 plot_out([efficient_frontier.png])
 
 rebal[rebalancing_solver.ipynb<br>main model + buy/sell variables and rebalancing budget]:::python
-w_old([w_old, v, g, p, b<br><i>defined in the first cell</i>])
+w_old([w_old, v, g, p, b, delta, target_return<br><i>defined in the first cell</i>])
 
 raw --> clean
 clean --> stats
