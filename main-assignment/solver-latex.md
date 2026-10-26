@@ -24,7 +24,7 @@ $\mu^*$ : Target portfolio return
 $\epsilon$ : Tolerance band around target return
 $k$ : Maximum number of stocks in portfolio (set to 30)
 $M$ : Big-M constant (set to 1.0) 
-$j$ : Maximum share of portfolio in tech stocks (set to 9.3)
+$j$ : Maximum share of portfolio in tech stocks (set to 0.3)
 ## main model
 $$
 \begin{aligned}
@@ -63,7 +63,7 @@ Note : $w_t^{old}$ cannot be directly inferred from "last weeks" weights, since 
 $$
 \begin{aligned}
 \text{s.t.} \quad & w_t^{buy},w_t^{sell} \ge 0, && t \in T \quad & \text{Non-negativity}\\ 
-& w_t^{buy},w_t^{sell}\in \{0, 1\}, && t \in T \quad & \text{Binary domain}\\ 
+& y_t^{buy},y_t^{sell}\in \{0, 1\}, && t \in T \quad & \text{Binary domain}\\ 
 & y_t^{buy},w_t^{buy} \ge w_t-w_t^{old} && t \in T \quad & \text{Buy var enforcement} \\
 & y_t^{sell},w_t^{sell} \ge w_t^{old}-w_t && t \in T \quad & \text{Sell var enforcement} \\
 & FixedModCosts =\sum_{t \in T} g ( y_t^{sell} + y_t^{buy})  \\ 
