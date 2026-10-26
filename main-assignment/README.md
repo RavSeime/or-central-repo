@@ -44,5 +44,6 @@ classDef python fill:#3776AB,stroke:#FFD43B,stroke-width:3px,color:#FFD43B
    - The weights sum to 1, and the portfolio's expected return must land within a small band (`±tolerance`) around the target return.
    - The expected returns are annualized (`weekly ** 52`) to match the one-year scenarios.
    - At most `K = 30` stocks are held, enforced with binary variables and a big-M link (`w <= M * x`).
-   - The notebook sweeps the target return from `1.0` up to the highest annual expected return. Each target gives one optimal portfolio, and together they trace the frontier.
+   - At most `J = 30%` of the portfolio may sit in tech stocks (the list is in `data/tech_tickers.json`).
+   - The notebook sweeps the target return from `1.0` up to the highest annual expected return. Each target gives one optimal portfolio, and together they trace the frontier. Targets the solver cannot reach (infeasible under the constraints) are printed and left out of the output.
 4. **Plot** (`plot_frontier.ipynb`): target return (y) against CVaR (x). Points where the solver hit its time limit are marked.

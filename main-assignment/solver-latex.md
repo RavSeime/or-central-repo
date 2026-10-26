@@ -3,6 +3,8 @@
 
 $S$ : set of scenarios  
 T : set of tickers (stocks)
+$T^{tech} \subset T$ : subset of tickers that are tech stocks
+
 ## decision vars
 
 $\gamma$ : CVar measured in %
@@ -19,6 +21,7 @@ $\mu^*$ : Target portfolio return
 $\epsilon$ : Tolerance band around target return
 $K$ : Maximum number of stocks in portfolio
 $M$ : Big-M constant (set to 1.0) 
+J : Maximum share of portfolio in tech stocks
 ## main model
 $$
 \begin{aligned}
@@ -30,5 +33,6 @@ $$
 & z_s \ge 1 - \sum_{t \in T}( w_t r_{s,t}) - \gamma, && s \in S \quad &\text{Loss constraint}\\
 & x_t \in \{0, 1\}, && t \in T \quad & \text{Binary domain}\\
 & \sum_{t \in T} x_t \le K, && & \text{Cardinality constraint}\\
-& w_t \le M \cdot x_t, && t \in T \quad & \text{Big-M linkage}
+& w_t \le M \cdot x_t, && t \in T \quad & \text{Big-M linkage} \\
+& \sum_{t \in T^{tech}} w_t \le J \quad && & \text{Max share in tech stocks} 
 \end{aligned}$$
