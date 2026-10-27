@@ -147,7 +147,7 @@ In the main solver we could pick stocks freely as long as the constraints were k
 
 The model approach here is to modify the existing weights to minimize CVaR, while not exceeding a given rebalancing budget. Note that all the variables, parameters and constraints in the main solver are also applied here, the rebalancing solver is thus an expansion of the main solver.  
 
-The only difference with the data flow for rebalancing notebook is that there are some extra inputs due to the extra parameters, and that there's the output is only a single solution, not multiple solutions. for sake of simplicity, another flowchart was not created.
+The only difference with the data flow for rebalancing notebook is that there are some extra inputs due to the extra parameters, and that there's the output is only a single solution, not multiple solutions. For sake of simplicity, another flowchart was not created.
 
 #### model formulation
 
@@ -158,7 +158,7 @@ $w_t^{sell}$ : Variable that must be at least as large as the amount $t$ sold as
  $w_t^{buy}$ : Variable that must be at least as large as the amount $t$ bought as a proportion of the portfolio
 
 ##### additional parameter definitions
-$w_t^{old}$ : Proportion of portfolio invested in stock $t$ before current rebalancing
+$w_t^{old}$ : Proportion of portfolio invested in stock $t$ before current rebalancing 
 $g$ : Fixed cost of modifying a stock in EUR (set to 10)
 $p$ : Proportion cost of transaction (set to 0.0005)
 $v$ : The total value of the portfolio before rebalancing
@@ -182,9 +182,7 @@ $$
 & FixedModCosts =\sum_{t \in T} g ( y_t^{sell} + y_t^{buy})  \\ 
 & VarModCosts = \sum_{t \in T} v \cdot p (w_t^{sell} + w_t^{buy}) \\
 & FixedModCosts + VarModCosts \le b && & \text{Modification Budget}
-\end{aligned} 
-
-$$
+\end{aligned} $$
 
 ## Computational tests
 
