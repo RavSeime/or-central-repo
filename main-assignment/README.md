@@ -4,6 +4,8 @@ CVaR portfolio optimization on scenario data. The notebooks live in `src/main_as
 
 ## Architecture
 
+Main solver pipeline. The rebalancing add-on has its own diagram at the end.
+
 ```mermaid
 flowchart TD
 
@@ -22,9 +24,6 @@ solver_out([solver.output.json<br><i>one optimal portfolio per target return</i>
 plot[plot_frontier.ipynb]:::python
 plot_out([efficient_frontier.png])
 
-rebal[rebalancing_solver.ipynb<br>main model + buy/sell variables and rebalancing budget]:::python
-w_old([w_old, v, g, p, b, delta, target_return<br><i>defined in the first cell</i>])
-
 raw --> clean
 clean --> stats
 stats --> scen
@@ -35,10 +34,6 @@ latex -. "Implemented in" .-> solver
 solver --> solver_out
 solver_out --> plot
 plot --> plot_out
-stats --> rebal
-scen_out --> rebal
-w_old --> rebal
-latex -. "Implemented in" .-> rebal
 
 classDef python fill:#3776AB,stroke:#FFD43B,stroke-width:3px,color:#FFD43B
 ```
@@ -54,8 +49,36 @@ classDef python fill:#3776AB,stroke:#FFD43B,stroke-width:3px,color:#FFD43B
    - At most `J = 30%` of the portfolio may sit in tech stocks (the list is in `data/tech_tickers.json`).
    - The notebook sweeps the target return from `1.0` up to the highest annual expected return. Each target gives one optimal portfolio, and together they trace the frontier. Targets the solver cannot reach (infeasible under the constraints) are printed and left out of the output.
 4. **Plot** (`plot_frontier.ipynb`): target return (y) against CVaR (x). Points where the solver hit its time limit are marked.
-5. **Rebalancing** (`rebalancing_solver.ipynb`): the same model as the solver, started from an existing portfolio `w_old` (defined in the first cell).
-   - Buying or selling a stock costs a fixed fee `g` plus a proportional cost `p` on the traded value (`v` is the portfolio value).
-   - The total cost must stay within the rebalancing budget `b`.
-   - Binary variables `y_buy` / `y_sell` flag the stocks that are traded, so the fixed fee is only paid for those.
-   - It runs a single solve at one target return and prints the trades and costs.
+
+## Rebalancing (add-on)
+
+An optional extension of the main solver. Everything above works without it.
+
+```mermaid
+flowchart TD
+
+inputs([expected_returns_<br>covariance_matrix.json<br>scenario_cumulative_<br>returns.json<br>tech_tickers.json])
+params([w_old, v, g, p, b,<br>delta, target_return<br><i>defined in the<br>first cell</i>])
+latex[solver-latex.md<br><i>rebalancing<br>section</i>]
+
+rebal[rebalancing_solver.ipynb<br>main model + buy/sell variables<br>+ rebalancing budget]:::python
+out([printed trades and costs<br><i>no output file</i>])
+
+inputs --> rebal
+params --> rebal
+latex -. "Implemented in" .-> rebal
+rebal --> out
+
+classDef python fill:#3776AB,stroke:#FFD43B,stroke-width:3px,color:#FFD43B
+```
+
+## Rebalancing logic
+
+`rebalancing_solver.ipynb` holds the main model unchanged (CVaR objective, budget, target return band, cardinality `K`, tech cap `J`) and adds the following. It reads the same input files as the main solver, and `w_old` is defined in its first cell.
+
+- `w_old` is the portfolio held before rebalancing, and `v` is its value in EUR.
+- Binary variables `y_buy` / `y_sell` flag the stocks that are traded. The weights `w_buy` / `w_sell` are lower-bounded by the change from `w_old` (`w - w_old` and `w_old - w`).
+- Each traded stock costs a fixed fee `g`, plus a proportional cost `p` on the traded value (`v * p * (w_buy + w_sell)`).
+- The total cost must stay within the rebalancing budget `b`.
+- The objective adds `delta * (fixed + variable costs)` with a tiny `delta = 1e-6`. It only breaks ties, so the buy/sell variables stay as low as possible when the budget is not binding. The returned CVaR excludes this term.
+- It runs a single solve at one `target_return` and prints the trades and costs.
